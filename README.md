@@ -1,6 +1,6 @@
 # Sistema de Gestão de Funcionários (Atv do dia 20-10-2025)
 
-Raiz do repositório da atividade.
+Readme da aaiz do repositório da atividade.
 
 ---
 
