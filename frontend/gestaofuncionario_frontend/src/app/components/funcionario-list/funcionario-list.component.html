@@ -1,0 +1,64 @@
+<h2>Lista de Funcionários</h2>
+
+<div class="filtros-container">
+  <div class="form-group">
+    <label for="filtroCargo">Filtrar por Cargo:</label>
+    <input type="text" id="filtroCargo" [(ngModel)]="filtroCargo" (keydown.enter)="carregarFuncionarios()">
+  </div>
+
+  <div class="form-group">
+    <label for="filtroStatus">Filtrar por Status:</label>
+    <select id="filtroStatus" [(ngModel)]="filtroStatus">
+      <option value="">Todos</option>
+      <option value="true">Ativos</option>
+      <option value="false">Inativos</option>
+    </select>
+  </div>
+
+  <button class="btn-primary" (click)="carregarFuncionarios()">Filtrar</button>
+</div>
+
+@if (isLoading()) {
+  <p>Carregando lista...</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Cargo</th>
+        <th>Salário</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (func of funcionarios(); track func.id) {
+        <tr>
+          <td>{{ func.nome }}</td>
+          <td>{{ func.email }}</td>
+          <td>{{ func.cargo }}</td>
+          <td>{{ func.salario | currency:'BRL' }}</td>
+          <td>
+            @if (func.ativo) {
+              <span class="tag tag-ativo">Ativo</span>
+            } @else {
+              <span class="tag tag-inativo">Inativo</span>
+            }
+          </td>
+          <td>
+            <button class="btn-secondary" (click)="onEditar(func.id)">Editar</button>
+
+            @if (func.ativo) {
+              <button class="btn-danger" (click)="onInativar(func.id, func.nome)">Inativar</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6">Nenhum funcionário encontrado.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
