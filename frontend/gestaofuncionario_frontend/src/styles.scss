@@ -14,22 +14,45 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* --- Estilos da Navbar Atualizados --- */
+
 .navbar {
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: space-between; /* Empurra a logo/título para a esquerda e os links para a direita */
   background-color: #005a9c;
   color: white;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 20px; /* Espaçamento entre os grupos */
 }
 
+/* NOVO: Grupo da Logo e Título */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espaço entre a logo e o h1 */
+}
+
+/* NOVO: Estilo da Logo */
+.navbar-logo {
+  height: 40px; /* Defina a altura desejada para sua logo */
+  width: auto;  /* Mantém a proporção */
+}
+
+/* ATUALIZADO: Título (removido flex-grow) */
 .navbar h1 {
   margin: 0;
   font-size: 1.5rem;
-  flex-grow: 1;
 }
 
+/* NOVO: Grupo dos Links */
+.navbar-links {
+  display: flex;
+  gap: 10px;
+}
+
+/* Estilo dos links (sem alteração) */
 .navbar a {
   color: white;
   text-decoration: none;
@@ -41,6 +64,8 @@ body {
 .navbar a:hover {
   background-color: #004a80;
 }
+
+/* --- Fim dos Estilos da Navbar --- */
 
 button {
   padding: 10px 15px;
