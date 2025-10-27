@@ -1,5 +1,5 @@
 package com.fatesg.csoftware.gestaofuncionario.exception;
-
+ 
 public class DataConflictException extends RuntimeException {
 
     public DataConflictException(String message) {
