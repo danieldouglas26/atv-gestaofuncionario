@@ -66,7 +66,7 @@ export class DepartamentoFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) {
-      this.form.markAllAsTouched(); // Marca campos como tocados para exibir erros
+      this.form.markAllAsTouched();
       return;
     }
 
@@ -76,7 +76,7 @@ export class DepartamentoFormComponent implements OnInit {
 
     request.pipe(
       catchError(err => {
-        // Trata erro de duplicidade (409 CONFLICT) ou outros
+
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error?.erro || 'Falha ao salvar.' });
         return throwError(() => err);
       })
@@ -92,7 +92,7 @@ export class DepartamentoFormComponent implements OnInit {
     this.router.navigate(['/departamentos']);
   }
 
-  // Helpers para validação no template
+
   isFieldInvalid(fieldName: string): boolean {
     const control = this.form.get(fieldName);
     return control ? control.invalid && (control.dirty || control.touched) : false;

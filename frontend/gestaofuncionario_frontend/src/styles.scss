@@ -1,23 +1,19 @@
-/* Reset básico, fonte padrão e cor de fundo global */
 html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
-  // Esta é a cor de fundo "fora" dos seus componentes
   background-color: #f4f7f9;
   color: #495057;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Garante que os cards/painéis do PrimeNG tenham um fundo branco */
 .card {
   background-color: #ffffff;
 }
 
-/* Remove a borda padrão do p-panel quando ele está dentro de um p-toolbar */
 p-toolbar .p-panel {
   border: none;
   box-shadow: none;
