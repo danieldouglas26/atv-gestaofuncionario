@@ -1,7 +1,7 @@
-import { CommonModule, Location } from '@angular/common'; // Importar Location
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // Removido RouterLink
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
@@ -13,6 +13,7 @@ import { catchError, Observable, of, throwError } from 'rxjs';
 import { Funcionario } from '../../models/funcionario.model';
 import { FuncionarioService } from '../../services/funcionario.service';
 
+// --- NOVOS IMPORTS ---
 import { DropdownModule } from 'primeng/dropdown';
 import { Departamento } from '../../models/departamento.model';
 import { DepartamentoService } from '../../services/departamento.service';
@@ -23,14 +24,14 @@ import { DepartamentoService } from '../../services/departamento.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
+    // RouterLink, // Removido
     PanelModule,
     InputTextModule,
     InputNumberModule,
     CalendarModule,
     ButtonModule,
     ToastModule,
-    DropdownModule
+    DropdownModule // Adicionado
   ],
   templateUrl: './funcionario-form.component.html',
   styleUrl: './funcionario-form.component.scss'
@@ -41,6 +42,7 @@ export class FuncionarioFormComponent implements OnInit {
   isEditMode = false;
   funcionarioId: number | null = null;
   formTitle = 'Novo Funcionário';
+
   departamentos$!: Observable<Departamento[]>;
 
   constructor(
@@ -73,7 +75,7 @@ export class FuncionarioFormComponent implements OnInit {
 
       this.funcionarioService.buscarPorId(this.funcionarioId).subscribe({
         next: (func) => {
-          const dataAdmissaoDate = new Date(func.dataAdmissao + 'T00:00:00'); // Ajusta fuso
+          const dataAdmissaoDate = new Date(func.dataAdmissao + 'T00:00:00');
           this.form.patchValue({
             ...func,
             dataAdmissao: dataAdmissaoDate
@@ -103,7 +105,6 @@ export class FuncionarioFormComponent implements OnInit {
     }
 
     const formData = this.form.value;
-
     const dataFormatada = this.formatarData(formData.dataAdmissao);
 
     const requestData = {
@@ -128,17 +129,15 @@ export class FuncionarioFormComponent implements OnInit {
     });
   }
 
-  // Função utilitária para formatar a data
   private formatarData(date: Date): string {
     if (!date) return '';
-    // Converte para o fuso local antes de formatar
     const offset = date.getTimezoneOffset();
     const localDate = new Date(date.getTime() - (offset * 60000));
     return localDate.toISOString().split('T')[0];
   }
 
   cancelar(): void {
-    this.location.back(); // Volta para a página anterior
+    this.location.back();
   }
 
   isFieldInvalid(fieldName: string): boolean {
