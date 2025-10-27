@@ -6,9 +6,12 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -37,11 +40,15 @@ public class Funcionario {
     @Column(nullable = false)
     private Boolean ativo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departamento_id", nullable = false)
+    private Departamento departamento;
+
     public Funcionario() {
     }
 
     public Funcionario(Long id, String nome, String email, String cargo, BigDecimal salario, LocalDate dataAdmissao,
-            Boolean ativo) {
+            Boolean ativo, Departamento departamento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -49,6 +56,7 @@ public class Funcionario {
         this.salario = salario;
         this.dataAdmissao = dataAdmissao;
         this.ativo = ativo;
+        this.departamento = departamento;
     }
 
     public Long getId() {
@@ -107,6 +115,14 @@ public class Funcionario {
         this.ativo = ativo;
     }
 
+    public Departamento getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -129,6 +145,7 @@ public class Funcionario {
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
                 ", ativo=" + ativo +
+                ", departamentoId=" + (departamento != null ? departamento.getId() : "null") +
                 '}';
     }
 }
