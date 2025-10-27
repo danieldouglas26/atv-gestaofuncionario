@@ -31,17 +31,23 @@ public class FuncionarioRequestDTO {
     @PastOrPresent(message = "Data de admissão não pode ser posterior à data atual")
     private LocalDate dataAdmissao;
 
+    @NotNull(message = "Departamento é obrigatório")
+    private Long departamentoId;
+
     public FuncionarioRequestDTO() {
     }
 
-    public FuncionarioRequestDTO(String nome, String email, String cargo, BigDecimal salario, LocalDate dataAdmissao) {
+    public FuncionarioRequestDTO(String nome, String email, String cargo, BigDecimal salario, LocalDate dataAdmissao,
+            Long departamentoId) {
         this.nome = nome;
         this.email = email;
         this.cargo = cargo;
         this.salario = salario;
         this.dataAdmissao = dataAdmissao;
+        this.departamentoId = departamentoId; 
     }
 
+ 
     public String getNome() {
         return nome;
     }
@@ -80,5 +86,13 @@ public class FuncionarioRequestDTO {
 
     public void setDataAdmissao(LocalDate dataAdmissao) {
         this.dataAdmissao = dataAdmissao;
+    }
+
+    public Long getDepartamentoId() {
+        return departamentoId;
+    }
+
+    public void setDepartamentoId(Long departamentoId) {
+        this.departamentoId = departamentoId;
     }
 }
