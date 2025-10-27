@@ -6,7 +6,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 @Component({
   selector: 'app-root',
   standalone: true,
-  // Adicionar imports
   imports: [
     RouterOutlet,
     RouterLink,

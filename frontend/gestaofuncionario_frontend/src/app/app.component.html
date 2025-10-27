@@ -2,12 +2,17 @@
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
 <header class="navbar">
-      <img src="/imagens/SENAI_logo_2024.png" alt="Logo da Empresa" class="navbar-logo">
+  <div class="navbar-brand">
+    <img src="/imagens/SENAI_logo_2024.png" alt="Logo da Empresa" class="navbar-logo">
+    <h1>Gestão de Pessoal</h1>
+  </div>
 
-  <h1>Gestão de Pessoal</h1>
   <nav>
-    <a routerLink="/funcionarios" routerLinkActive="active-link">Funcionários</a>
-    <a routerLink="/departamentos" routerLinkActive="active-link">Departamentos</a>
+    <a routerLink="/funcionarios"
+       routerLinkActive="active-link"
+       [routerLinkActiveOptions]="{exact: true}">Funcionários</a>
+    <a routerLink="/departamentos"
+       routerLinkActive="active-link">Departamentos</a>
   </nav>
 </header>
 
