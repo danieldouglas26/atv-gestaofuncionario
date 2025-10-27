@@ -48,9 +48,11 @@ Toda a documentação da API, incluindo todos os endpoints, modelos de dados e r
 
 **Acesse em:** [**http://localhost:8080/swagger-ui.html**](http://localhost:8080/swagger-ui.html)
 
-## 5. Exemplo de Endpoints
+## 5. Endpoints da API
 
 Abaixo estão os principais endpoints definidos pela API.
+
+### 5.1 Endpoints de Funcionários
 
 | Método | Endpoint | Descrição |
 | :--- | :--- | :--- |
@@ -59,3 +61,14 @@ Abaixo estão os principais endpoints definidos pela API.
 | `GET` | `/api/funcionarios/{id}` | Busca um funcionário específico pelo ID. |
 | `PUT` | `/api/funcionarios/{id}` | Atualiza os dados de um funcionário ativo. |
 | `PATCH` | `/api/funcionarios/{id}/inativar` | Inativa um funcionário (altera `ativo` para `false`). |
+
+### 5.2 Endpoints de Departamentos
+
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/departamentos` | Lista todos os departamentos. |
+| `GET` | `/api/departamentos/ativos` | Lista apenas os departamentos ativos. |
+| `POST` | `/api/departamentos` | Cria um novo departamento. |
+| `GET` | `/api/departamentos/{id}` | Busca um departamento específico pelo ID. |
+| `PUT` | `/api/departamentos/{id}` | Atualiza os dados (nome e sigla) de um departamento. |
+| `PATCH` | `/api/departamentos/{id}/inativar` | Inativa um departamento (altera `ativo` para `false`). |
