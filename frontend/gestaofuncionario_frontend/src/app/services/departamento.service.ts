@@ -6,6 +6,7 @@ import { Departamento } from '../models/departamento.model';
 @Injectable({
   providedIn: 'root'
 })
+
 export class DepartamentoService {
 
   private baseUrl = 'http://localhost:8080/api/departamentos';
