@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fatesg.csoftware.gestaofuncionario.dto.FuncionarioRequestDTO;
 import com.fatesg.csoftware.gestaofuncionario.dto.FuncionarioResponseDTO;
 import com.fatesg.csoftware.gestaofuncionario.exception.BusinessRuleException;
-import com.fatesg.csoftware.gestaofuncionario.exception.EmailConflictException;
+import com.fatesg.csoftware.gestaofuncionario.exception.DataConflictException;
 import com.fatesg.csoftware.gestaofuncionario.exception.ResourceNotFoundException;
+import com.fatesg.csoftware.gestaofuncionario.model.Departamento;
 import com.fatesg.csoftware.gestaofuncionario.model.Funcionario;
+import com.fatesg.csoftware.gestaofuncionario.repository.DepartamentoRepository;
 import com.fatesg.csoftware.gestaofuncionario.repository.FuncionarioRepository;
 
 import jakarta.persistence.criteria.Predicate;
@@ -24,9 +26,12 @@ import jakarta.persistence.criteria.Predicate;
 public class FuncionarioServiceImpl implements FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
+    private final DepartamentoRepository departamentoRepository;
 
-    public FuncionarioServiceImpl(FuncionarioRepository funcionarioRepository) {
+    public FuncionarioServiceImpl(FuncionarioRepository funcionarioRepository,
+            DepartamentoRepository departamentoRepository) {
         this.funcionarioRepository = funcionarioRepository;
+        this.departamentoRepository = departamentoRepository;
     }
 
     @Override
@@ -44,6 +49,9 @@ public class FuncionarioServiceImpl implements FuncionarioService {
             if (ativo != null) {
                 predicates.add(cb.equal(root.get("ativo"), ativo));
             }
+
+            root.fetch("departamento");
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
@@ -66,16 +74,20 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     @Override
     @Transactional
     public FuncionarioResponseDTO criarFuncionario(FuncionarioRequestDTO requestDTO) {
+
+        Departamento dep = buscarDepartamentoAtivo(requestDTO.getDepartamentoId());
+
         Optional<Funcionario> emailExistente = funcionarioRepository.findByEmail(requestDTO.getEmail());
 
         if (emailExistente.isPresent()) {
             Funcionario existente = emailExistente.get();
 
             if (existente.isAtivo()) {
-                throw new EmailConflictException("E-mail já cadastrado e ativo no sistema.");
+
+                throw new DataConflictException("E-mail já cadastrado e ativo no sistema.");
             } else {
 
-                return reativarEAtualizarFuncionario(existente, requestDTO);
+                return reativarEAtualizarFuncionario(existente, requestDTO, dep);
             }
         }
 
@@ -85,17 +97,31 @@ public class FuncionarioServiceImpl implements FuncionarioService {
         novoFuncionario.setCargo(requestDTO.getCargo());
         novoFuncionario.setSalario(requestDTO.getSalario());
         novoFuncionario.setDataAdmissao(requestDTO.getDataAdmissao());
+        novoFuncionario.setDepartamento(dep);
         novoFuncionario.setAtivo(true);
 
         Funcionario salvo = funcionarioRepository.save(novoFuncionario);
         return FuncionarioResponseDTO.fromEntity(salvo);
     }
 
-    private FuncionarioResponseDTO reativarEAtualizarFuncionario(Funcionario funcionario, FuncionarioRequestDTO dto) {
+    private Departamento buscarDepartamentoAtivo(Long id) {
+        Departamento dep = departamentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Departamento não encontrado com ID: " + id));
+
+        if (!dep.isAtivo()) {
+            throw new BusinessRuleException(
+                    "O departamento '" + dep.getNome() + "' está inativo e não pode receber novos funcionários.");
+        }
+        return dep;
+    }
+
+    private FuncionarioResponseDTO reativarEAtualizarFuncionario(Funcionario funcionario, FuncionarioRequestDTO dto,
+            Departamento departamento) {
         funcionario.setNome(dto.getNome());
         funcionario.setCargo(dto.getCargo());
         funcionario.setSalario(dto.getSalario());
         funcionario.setDataAdmissao(dto.getDataAdmissao());
+        funcionario.setDepartamento(departamento);
         funcionario.setAtivo(true);
 
         Funcionario salvo = funcionarioRepository.save(funcionario);
@@ -112,6 +138,8 @@ public class FuncionarioServiceImpl implements FuncionarioService {
             throw new BusinessRuleException("Somente funcionários ativos podem ser editados.");
         }
 
+        Departamento dep = buscarDepartamentoAtivo(requestDTO.getDepartamentoId());
+
         if (requestDTO.getSalario().compareTo(funcionario.getSalario()) < 0) {
             throw new BusinessRuleException(
                     "O salário não pode ser reduzido (valor atual: " + funcionario.getSalario() + ").");
@@ -119,7 +147,8 @@ public class FuncionarioServiceImpl implements FuncionarioService {
 
         Optional<Funcionario> emailExistente = funcionarioRepository.findByEmailAndIdNot(requestDTO.getEmail(), id);
         if (emailExistente.isPresent()) {
-            throw new EmailConflictException("E-mail já pertence a outro funcionário cadastrado.");
+
+            throw new DataConflictException("E-mail já pertence a outro funcionário cadastrado.");
         }
 
         funcionario.setNome(requestDTO.getNome());
@@ -127,6 +156,7 @@ public class FuncionarioServiceImpl implements FuncionarioService {
         funcionario.setCargo(requestDTO.getCargo());
         funcionario.setSalario(requestDTO.getSalario());
         funcionario.setDataAdmissao(requestDTO.getDataAdmissao());
+        funcionario.setDepartamento(dep);
 
         Funcionario salvo = funcionarioRepository.save(funcionario);
         return FuncionarioResponseDTO.fromEntity(salvo);
