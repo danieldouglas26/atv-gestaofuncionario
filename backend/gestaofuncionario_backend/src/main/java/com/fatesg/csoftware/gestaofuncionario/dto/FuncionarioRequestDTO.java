@@ -1,5 +1,5 @@
 package com.fatesg.csoftware.gestaofuncionario.dto;
-
+ 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
