@@ -1,5 +1,5 @@
 package com.fatesg.csoftware.gestaofuncionario.dto;
-
+ 
 import com.fatesg.csoftware.gestaofuncionario.model.Departamento;
 
 public class DepartamentoResponseDTO {
