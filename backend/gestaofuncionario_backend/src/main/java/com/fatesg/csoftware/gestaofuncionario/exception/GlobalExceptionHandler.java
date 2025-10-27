@@ -37,8 +37,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EmailConflictException.class)
-    public ResponseEntity<Object> handleEmailConflictException(EmailConflictException ex) {
+    // ATUALIZADO AQUI
+    @ExceptionHandler(DataConflictException.class)
+    public ResponseEntity<Object> handleDataConflictException(DataConflictException ex) {
         Map<String, String> body = new HashMap<>();
         body.put("erro", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
