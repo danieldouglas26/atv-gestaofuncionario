@@ -5,7 +5,7 @@ import java.util.List;
 import com.fatesg.csoftware.gestaofuncionario.dto.DepartamentoRequestDTO;
 import com.fatesg.csoftware.gestaofuncionario.dto.DepartamentoResponseDTO;
 
-public interface DepartamentoService {
+public interface DepartamentoService { 
 
     List<DepartamentoResponseDTO> listarTodos();
 
