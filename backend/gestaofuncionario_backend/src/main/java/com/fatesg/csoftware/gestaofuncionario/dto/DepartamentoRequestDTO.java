@@ -1,5 +1,5 @@
 package com.fatesg.csoftware.gestaofuncionario.dto;
-
+ 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
