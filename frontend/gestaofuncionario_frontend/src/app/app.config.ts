@@ -3,15 +3,31 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations'; // Importar
-import { ConfirmationService, MessageService } from 'primeng/api'; // Importar
+
+
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
+
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withFetch()),
-    provideAnimations(),
+
+
+    provideAnimationsAsync(),
+    providePrimeNG({
+        theme: {
+            preset: Aura
+
+
+        }
+    }),
     MessageService,
     ConfirmationService
+
   ]
 };
