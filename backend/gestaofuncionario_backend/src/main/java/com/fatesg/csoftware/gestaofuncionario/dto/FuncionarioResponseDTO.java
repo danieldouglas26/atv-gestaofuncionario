@@ -2,7 +2,7 @@ package com.fatesg.csoftware.gestaofuncionario.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
+ 
 import com.fatesg.csoftware.gestaofuncionario.model.Funcionario;
 
 public class FuncionarioResponseDTO {
