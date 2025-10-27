@@ -1,127 +1,148 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { CommonModule, Location } from '@angular/common'; // Importar Location
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { PanelModule } from 'primeng/panel';
+import { ToastModule } from 'primeng/toast';
+import { catchError, Observable, of, throwError } from 'rxjs';
+import { Funcionario } from '../../models/funcionario.model';
 import { FuncionarioService } from '../../services/funcionario.service';
-import { FuncionarioRequest } from '../../models/funcionario.model';
-import { HttpErrorResponse } from '@angular/common/http';
+
+import { DropdownModule } from 'primeng/dropdown';
+import { Departamento } from '../../models/departamento.model';
+import { DepartamentoService } from '../../services/departamento.service';
 
 @Component({
   selector: 'app-funcionario-form',
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     RouterLink,
-    ReactiveFormsModule
+    PanelModule,
+    InputTextModule,
+    InputNumberModule,
+    CalendarModule,
+    ButtonModule,
+    ToastModule,
+    DropdownModule
   ],
   templateUrl: './funcionario-form.component.html',
   styleUrl: './funcionario-form.component.scss'
 })
 export class FuncionarioFormComponent implements OnInit {
 
-  private fb = inject(FormBuilder);
-  private service = inject(FuncionarioService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  form: FormGroup;
+  isEditMode = false;
+  funcionarioId: number | null = null;
+  formTitle = 'Novo Funcionário';
+  departamentos$!: Observable<Departamento[]>;
 
-  public funcionarioForm: FormGroup;
-
-
-  private funcionarioId = signal<number | null>(null);
-  public isEditMode = computed(() => this.funcionarioId() !== null);
-  public isLoading = signal(false);
-
-  constructor() {
-
-    this.funcionarioForm = this.fb.group({
-
+  constructor(
+    private fb: FormBuilder,
+    private funcionarioService: FuncionarioService,
+    private departamentoService: DepartamentoService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private messageService: MessageService,
+    private location: Location
+  ) {
+    this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      cargo: ['', Validators.required],
+      cargo: ['', [Validators.required]],
       salario: [null, [Validators.required, Validators.min(0.01)]],
-      dataAdmissao: [null, [Validators.required, this.dataNaoFuturaValidator]]
+      dataAdmissao: [null, [Validators.required]],
+      departamentoId: [null, [Validators.required]]
     });
   }
 
   ngOnInit(): void {
+    this.loadDepartamentos();
 
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
-      const id = +idParam;
-      this.funcionarioId.set(id);
-      this.carregarFuncionario(id);
+      this.isEditMode = true;
+      this.funcionarioId = +idParam;
+      this.formTitle = 'Editar Funcionário';
+
+      this.funcionarioService.buscarPorId(this.funcionarioId).subscribe({
+        next: (func) => {
+          const dataAdmissaoDate = new Date(func.dataAdmissao + 'T00:00:00'); // Ajusta fuso
+          this.form.patchValue({
+            ...func,
+            dataAdmissao: dataAdmissaoDate
+          });
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao carregar funcionário.' });
+          this.router.navigate(['/funcionarios']);
+        }
+      });
     }
   }
 
-
-  private dataNaoFuturaValidator(control: AbstractControl): ValidationErrors | null {
-    if (!control.value) return null;
-
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-
-    const dataInput = new Date(control.value + 'T00:00:00');
-
-    return dataInput > hoje ? { dataFutura: true } : null;
+  loadDepartamentos(): void {
+    this.departamentos$ = this.departamentoService.listarAtivos().pipe(
+      catchError(err => {
+        this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'Não foi possível carregar os departamentos.' });
+        return of([]);
+      })
+    );
   }
 
-  carregarFuncionario(id: number): void {
-    this.isLoading.set(true);
-    this.service.buscarPorId(id).subscribe({
-      next: (func) => {
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-        this.funcionarioForm.patchValue(func);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Erro ao buscar funcionário', err);
-        alert('Funcionário não encontrado.');
+    const formData = this.form.value;
+
+    const dataFormatada = this.formatarData(formData.dataAdmissao);
+
+    const requestData = {
+      ...formData,
+      dataAdmissao: dataFormatada
+    };
+
+    const request = this.isEditMode
+      ? this.funcionarioService.atualizar(this.funcionarioId!, requestData)
+      : this.funcionarioService.criar(requestData);
+
+    request.pipe(
+      catchError(err => {
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error?.erro || 'Falha ao salvar.' });
+        return throwError(() => err);
+      })
+    ).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: `Funcionário ${this.isEditMode ? 'atualizado' : 'criado'}!` });
         this.router.navigate(['/funcionarios']);
-        this.isLoading.set(false);
       }
     });
   }
 
-  onSubmit(): void {
-    if (this.funcionarioForm.invalid) {
-      this.funcionarioForm.markAllAsTouched();
-      return;
-    }
-
-    this.isLoading.set(true);
-    const request: FuncionarioRequest = this.funcionarioForm.value;
-
-    if (this.isEditMode()) {
-
-      this.service.atualizar(this.funcionarioId()!, request).subscribe({
-        next: () => this.handleSuccess('Funcionário atualizado com sucesso!'),
-        error: (err) => this.handleError(err)
-      });
-    } else {
-
-      this.service.criar(request).subscribe({
-        next: () => this.handleSuccess('Funcionário cadastrado com sucesso!'),
-        error: (err) => this.handleError(err)
-      });
-    }
+  // Função utilitária para formatar a data
+  private formatarData(date: Date): string {
+    if (!date) return '';
+    // Converte para o fuso local antes de formatar
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset * 60000));
+    return localDate.toISOString().split('T')[0];
   }
 
-  private handleSuccess(mensagem: string): void {
-    alert(mensagem);
-    this.isLoading.set(false);
-    this.router.navigate(['/funcionarios']);
+  cancelar(): void {
+    this.location.back(); // Volta para a página anterior
   }
 
- private handleError(err: HttpErrorResponse): void {
-  console.error('Erro ao salvar', err);
-  this.isLoading.set(false);
-
-  alert(err.error?.erro || 'Ocorreu um erro ao salvar.');
-}
-
-  get nome() { return this.funcionarioForm.get('nome'); }
-  get email() { return this.funcionarioForm.get('email'); }
-  get cargo() { return this.funcionarioForm.get('cargo'); }
-  get salario() { return this.funcionarioForm.get('salario'); }
-  get dataAdmissao() { return this.funcionarioForm.get('dataAdmissao'); }
+  isFieldInvalid(fieldName: string): boolean {
+    const control = this.form.get(fieldName);
+    return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
 }

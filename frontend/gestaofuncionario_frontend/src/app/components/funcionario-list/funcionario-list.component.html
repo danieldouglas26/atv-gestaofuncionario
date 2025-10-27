@@ -1,64 +1,84 @@
-<h2>Lista de Funcionários</h2>
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-<div class="filtros-container">
-  <div class="form-group">
-    <label for="filtroCargo">Filtrar por Cargo:</label>
-    <input type="text" id="filtroCargo" [(ngModel)]="filtroCargo" (keydown.enter)="carregarFuncionarios()">
-  </div>
+<div class="card">
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <h2>Gestão de Funcionários</h2>
+    </ng-template>
+    <ng-template pTemplate="right">
+      <p-button
+        label="Novo Funcionário"
+        icon="pi pi-plus"
+        styleClass="p-button-success"
+        (click)="novo()"
+      ></p-button>
+    </ng-template>
+  </p-toolbar>
 
-  <div class="form-group">
-    <label for="filtroStatus">Filtrar por Status:</label>
-    <select id="filtroStatus" [(ngModel)]="filtroStatus">
-      <option value="">Todos</option>
-      <option value="true">Ativos</option>
-      <option value="false">Inativos</option>
-    </select>
-  </div>
-
-  <button class="btn-primary" (click)="carregarFuncionarios()">Filtrar</button>
-</div>
-
-@if (isLoading()) {
-  <p>Carregando lista...</p>
-} @else {
-  <table>
-    <thead>
+  <p-table
+    [value]="(funcionarios$ | async)!"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 20, 50]"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    styleClass="p-datatable-striped"
+  >
+    <ng-template pTemplate="header">
       <tr>
-        <th>Nome</th>
+        <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
         <th>Email</th>
-        <th>Cargo</th>
-        <th>Salário</th>
-        <th>Status</th>
-        <th>Ações</th>
+        <th pSortableColumn="departamentoNome">
+          Departamento <p-sortIcon field="departamentoNome"></p-sortIcon>
+        </th>
+        <th style="width: 15%">Status</th>
+        <th style="width: 15%">Ações</th>
       </tr>
-    </thead>
-    <tbody>
-      @for (func of funcionarios(); track func.id) {
-        <tr>
-          <td>{{ func.nome }}</td>
-          <td>{{ func.email }}</td>
-          <td>{{ func.cargo }}</td>
-          <td>{{ func.salario | currency:'BRL' }}</td>
-          <td>
-            @if (func.ativo) {
-              <span class="tag tag-ativo">Ativo</span>
-            } @else {
-              <span class="tag tag-inativo">Inativo</span>
-            }
-          </td>
-          <td>
-            <button class="btn-secondary" (click)="onEditar(func.id)">Editar</button>
-
-            @if (func.ativo) {
-              <button class="btn-danger" (click)="onInativar(func.id, func.nome)">Inativar</button>
-            }
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="6">Nenhum funcionário encontrado.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-}
+    </ng-template>
+    <ng-template pTemplate="body" let-func>
+      <tr>
+        <td>{{ func.nome }}</td>
+        <td>{{ func.email }}</td>
+        <td>
+          {{ func.departamentoNome }} ({{ func.departamentoSigla }})
+          <p-tag
+            *ngIf="!func.departamentoAtivo"
+            value="Depto. Inativo"
+            severity="warning"
+            styleClass="ml-2"
+            pTooltip="Este funcionário está alocado em um departamento inativo."
+            tooltipPosition="top"
+          ></p-tag>
+        </td>
+        <td>
+          <p-tag
+            [value]="func.ativo ? 'ATIVO' : 'INATIVO'"
+            [severity]="func.ativo ? 'success' : 'danger'"
+          ></p-tag>
+        </td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            styleClass="p-button-rounded p-button-info mr-2"
+            pTooltip="Editar"
+            tooltipPosition="top"
+            (click)="editar(func.id)"
+          ></p-button>
+          <p-button
+            icon="pi pi-ban"
+            styleClass="p-button-rounded p-button-danger"
+            pTooltip="Inativar"
+            tooltipPosition="top"
+            (click)="inativar(func.id)"
+            [disabled]="!func.ativo"
+          ></p-button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">Nenhum funcionário encontrado.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

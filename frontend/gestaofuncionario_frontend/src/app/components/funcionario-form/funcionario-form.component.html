@@ -1,80 +1,91 @@
-<h2>
-  @if (isEditMode()) {
-    Editar Funcionário
-  } @else {
-    Cadastrar Novo Funcionário
-  }
-</h2>
+<p-toast></p-toast>
+<p-panel [header]="formTitle">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="p-fluid grid">
+      <div class="field col-12 md:col-8">
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" pInputText formControlName="nome" />
+        <small class="p-error" *ngIf="isFieldInvalid('nome')">
+          Nome é obrigatório (mín. 3 caracteres).
+        </small>
+      </div>
 
-@if (isLoading()) {
-  <p>Carregando...</p>
-} @else {
-  <form [formGroup]="funcionarioForm" (ngSubmit)="onSubmit()">
+      <div class="field col-12 md:col-4">
+        <label for="email">Email</label>
+        <input id="email" type="text" pInputText formControlName="email" />
+        <small class="p-error" *ngIf="isFieldInvalid('email')">
+          Email é obrigatório e deve ser válido.
+        </small>
+      </div>
 
-    <div class="form-group">
-      <label for="nome">Nome:</label>
-      <input id="nome" type="text" formControlName="nome">
+      <div class="field col-12 md:col-6">
+        <label for="cargo">Cargo</label>
+        <input id="cargo" type="text" pInputText formControlName="cargo" />
+        <small class="p-error" *ngIf="isFieldInvalid('cargo')">
+          Cargo é obrigatório.
+        </small>
+      </div>
 
-      @if (nome?.invalid && (nome?.dirty || nome?.touched)) {
-        <div class="form-error">
-          @if (nome?.errors?.['required']) { <span>Nome é obrigatório.</span> }
-          @if (nome?.errors?.['minlength']) { <span>Nome deve ter no mínimo 3 caracteres.</span> }
-        </div>
-      }
+      <div class="field col-12 md:col-6">
+        <label for="departamentoId">Departamento</label>
+        <p-dropdown
+          id="departamentoId"
+          [options]="(departamentos$ | async)!"
+          optionLabel="nome"
+          optionValue="id"
+          formControlName="departamentoId"
+          placeholder="Selecione o departamento"
+          [filter]="true"
+          filterBy="nome"
+        ></p-dropdown>
+        <small class="p-error" *ngIf="isFieldInvalid('departamentoId')">
+          Departamento é obrigatório.
+        </small>
+      </div>
+      <div class="field col-12 md:col-6">
+        <label for="salario">Salário</label>
+        <p-inputNumber
+          id="salario"
+          formControlName="salario"
+          mode="decimal"
+          locale="pt-BR"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          prefix="R$ "
+        ></p-inputNumber>
+        <small class="p-error" *ngIf="isFieldInvalid('salario')">
+          Salário é obrigatório e deve ser maior que zero.
+        </small>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="dataAdmissao">Data de Admissão</label>
+        <p-calendar
+          id="dataAdmissao"
+          formControlName="dataAdmissao"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+        ></p-calendar>
+        <small class="p-error" *ngIf="isFieldInvalid('dataAdmissao')">
+          Data de admissão é obrigatória.
+        </small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="email">Email:</label>
-      <input id="email" type="email" formControlName="email"
-             [readonly]="isEditMode() && !funcionarioForm.get('email')?.pristine">
-             @if (email?.invalid && (email?.dirty || email?.touched)) {
-        <div class="form-error">
-          @if (email?.errors?.['required']) { <span>Email é obrigatório.</span> }
-@if (email?.errors?.['email']) { <span>Email deve ter um formato válido (ex: nome&#64;dominio.com).</span> }        </div>
-      }
+    <div classs="flex justify-content-end gap-2 mt-4">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        styleClass="p-button-secondary"
+        (click)="cancelar()"
+      ></p-button>
+      <p-button
+        type="submit"
+        label="Salvar"
+        icon="pi pi-check"
+        [disabled]="form.invalid"
+        styleClass="ml-2"
+      ></p-button>
     </div>
-
-    <div class="form-group">
-      <label for="cargo">Cargo:</label>
-      <input id="cargo" type="text" formControlName="cargo">
-
-      @if (cargo?.invalid && (cargo?.dirty || cargo?.touched)) {
-        <div class="form-error">
-          @if (cargo?.errors?.['required']) { <span>Cargo é obrigatório.</span> }
-        </div>
-      }
-    </div>
-
-    <div class="form-group">
-      <label for="salario">Salário:</label>
-      <input id="salario" type="number" formControlName="salario" min="0.01" step="0.01">
-
-      @if (salario?.invalid && (salario?.dirty || salario?.touched)) {
-        <div class="form-error">
-          @if (salario?.errors?.['required']) { <span>Salário é obrigatório.</span> }
-          @if (salario?.errors?.['min']) { <span>Salário deve ser positivo e maior que zero.</span> }
-        </div>
-      }
-    </div>
-
-    <div class="form-group">
-      <label for="dataAdmissao">Data de Admissão:</label>
-      <input id="dataAdmissao" type="date" formControlName="dataAdmissao">
-
-      @if (dataAdmissao?.invalid && (dataAdmissao?.dirty || dataAdmissao?.touched)) {
-        <div class="form-error">
-          @if (dataAdmissao?.errors?.['required']) { <span>Data de admissão é obrigatória.</span> }
-          @if (dataAdmissao?.errors?.['dataFutura']) { <span>Data de admissão não pode ser posterior à data atual.</span> }
-        </div>
-      }
-    </div>
-
-    <div class="form-actions">
-      <button class="btn-primary" type="submit" [disabled]="funcionarioForm.invalid || isLoading()">
-        @if(isLoading()) { Salvando... } @else { Salvar }
-      </button>
-      <button class="btn-secondary" type="button" routerLink="/funcionarios">Cancelar</button>
-    </div>
-
   </form>
-}
+</p-panel>
