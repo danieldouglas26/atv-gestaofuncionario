@@ -1,14 +1,15 @@
-<nav class="navbar">
-  <div class="navbar-brand">
-    <img src="/imagens/SENAI_logo_2024.png" alt="Logo da Empresa" class="navbar-logo">
-    <h1>Gestão de Funcionários</h1>
-  </div>
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-  <div class="navbar-links">
-    <a routerLink="/funcionarios">Ver Lista</a>
-    <a routerLink="/funcionarios/novo">Novo Funcionário</a>
-  </div>
-</nav>
+<header class="navbar">
+      <img src="/imagens/SENAI_logo_2024.png" alt="Logo da Empresa" class="navbar-logo">
+
+  <h1>Gestão de Pessoal</h1>
+  <nav>
+    <a routerLink="/funcionarios" routerLinkActive="active-link">Funcionários</a>
+    <a routerLink="/departamentos" routerLinkActive="active-link">Departamentos</a>
+  </nav>
+</header>
 
 <main class="container">
   <router-outlet></router-outlet>
