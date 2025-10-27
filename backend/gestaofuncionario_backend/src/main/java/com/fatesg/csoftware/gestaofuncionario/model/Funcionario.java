@@ -2,7 +2,7 @@ package com.fatesg.csoftware.gestaofuncionario.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.Objects; 
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
