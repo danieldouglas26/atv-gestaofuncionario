@@ -1,5 +1,5 @@
 package com.fatesg.csoftware.gestaofuncionario.service;
- 
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +90,6 @@ public class DepartamentoServiceImpl implements DepartamentoService {
             throw new BusinessRuleException("Departamento já está inativo.");
         }
 
-     
         dep.setAtivo(false);
         departamentoRepository.save(dep);
     }
