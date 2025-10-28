@@ -1,16 +1,16 @@
 # Frontend - Sistema de Gestão de Funcionários
 
-Este é frontend do Sistema de Gestão de Funcionários, desenvolvido em Angular 19.
+Este é o frontend do Sistema de Gestão de Funcionários, desenvolvido em Angular 19 e estilizado com a biblioteca de componentes PrimeNG.
 
 ## 1. Dependências Principais
 
-O projeto utiliza os seguintes módulos e conceitos principais do Angular:
+O projeto utiliza as seguintes dependências e conceitos principais:
 
+* **PrimeNG:** Biblioteca de componentes UI principal para tabelas, formulários, botões, modais e feedback visual.
+* **@primeuix/themes:** Tema (Aura) para estilização centralizada do PrimeNG.
 * **Angular HttpClient:** Para o consumo da API REST do backend via `HttpClient`.
-* **Angular Forms (Reactive):** Para a criação de formulários reativos (`FormGroup`) com validações (Requisito 5.2.2).
-* **Angular Router:** Para a navegação entre as telas de listagem (`/funcionarios`) e formulário (`/funcionarios/novo`).
-* **Angular Signals:** Para gerenciamento de estado reativo nos componentes (ex: `isLoading`, `funcionarios()`).
-* **Angular Common:** Para diretivas estruturais (`@if`, `@for`) e pipes (`CurrencyPipe`).
+* **Angular Forms (Reactive):** Para a criação de formulários reativos (`FormGroup`) com validações.
+* **Angular Router:** Para a navegação entre as telas de listagem e formulários.
 
 ## 2. Portas e Caminhos Utilizados
 
@@ -41,10 +41,23 @@ Toda a documentação da API REST (que este frontend consome) está disponível 
 
 Abaixo estão os principais endpoints do backend que este frontend utiliza.
 
+### 5.1 Endpoints de Funcionários
+
 | Método | Endpoint | Descrição |
 | :--- | :--- | :--- |
-| `GET` | `/api/funcionarios` | Lista todos os funcionários (com filtros opcionais). |
+| `GET` | `/api/funcionarios` | Lista todos os funcionários. |
 | `POST` | `/api/funcionarios` | Cadastra um novo funcionário (ou reativa um inativo). |
 | `GET` | `/api/funcionarios/{id}` | Busca um funcionário específico pelo ID. |
 | `PUT` | `/api/funcionarios/{id}` | Atualiza os dados de um funcionário ativo. |
 | `PATCH` | `/api/funcionarios/{id}/inativar` | Inativa um funcionário (altera `ativo` para `false`). |
+
+### 5.2 Endpoints de Departamentos
+
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/departamentos` | Lista todos os departamentos. |
+| `GET` | `/api/departamentos/ativos` | Lista apenas os departamentos ativos (usado no Dropdown). |
+| `POST` | `/api/departamentos` | Cria um novo departamento. |
+| `GET` | `/api/departamentos/{id}` | Busca um departamento específico pelo ID. |
+| `PUT` | `/api/departamentos/{id}` | Atualiza os dados de um departamento. |
+| `PATCH` | `/api/departamentos/{id}/inativar` | Inativa um departamento (altera `ativo` para `false`). |
