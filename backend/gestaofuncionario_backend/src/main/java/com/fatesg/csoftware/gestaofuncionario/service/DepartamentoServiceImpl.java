@@ -38,7 +38,7 @@ public class DepartamentoServiceImpl implements DepartamentoService {
                 .map(DepartamentoResponseDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
+ 
     @Override
     @Transactional(readOnly = true)
     public DepartamentoResponseDTO buscarPorId(Long id) {
