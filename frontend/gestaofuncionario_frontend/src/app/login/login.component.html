@@ -1,36 +1,39 @@
 <div class="login-container">
-  <div class="card">
-    <div class="card-body">
-      <h2 class="card-title text-center">Login</h2>
-      <p class="text-center text-muted">Acesse o sistema de gestão</p>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <p-card header="Login" subheader="Acesse o sistema de gestão">
 
-        <div class="mb-3">
-          <label for="email" class="form-label">E-mail</label>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="mb-4">
+        <p-floatLabel>
           <input
+            pInputText
             id="email"
-            type="email"
             formControlName="email"
-            class="form-control"
-            placeholder="seuemail@dominio.com">
+            class="w-full"
+            [ngClass]="{'ng-invalid ng-dirty': email?.invalid && (email?.dirty || email?.touched)}"
+          />
+          <label for="email">E-mail</label>
+        </p-floatLabel>
 
-          <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)"
-               class="text-danger mt-1" style="font-size: 0.9em;">
-            <div *ngIf="loginForm.get('email')?.errors?.['required']">
-              O e-mail é obrigatório.
-            </div>
-            <div *ngIf="loginForm.get('email')?.errors?.['email']">
-              Por favor, insira um e-mail válido.
-            </div>
+        <small *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="p-error mt-1 d-block">
+          <div *ngIf="email?.errors?.['required']">
+            O e-mail é obrigatório.
           </div>
-        </div>
+          <div *ngIf="email?.errors?.['email']">
+            Por favor, insira um e-mail válido.
+          </div>
+        </small>
+      </div>
 
-        <button type="submit" [disabled]="loginForm.invalid" class="btn btn-primary w-100">
-          Entrar
-        </button>
+      <p-button
+        label="Entrar"
+        type="submit"
+        [disabled]="loginForm.invalid"
+        styleClass="w-full">
+      </p-button>
 
-      </form>
-    </div>
-  </div>
+    </form>
+  </p-card>
+
 </div>

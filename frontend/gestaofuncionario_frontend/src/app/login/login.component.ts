@@ -3,13 +3,23 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
+
+    CardModule,
+    InputTextModule,
+    ButtonModule,
+    FloatLabelModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -23,13 +33,11 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-
       email: ['', [Validators.required, Validators.email]]
     });
   }
 
   ngOnInit(): void {
-
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/departamentos']);
     }
@@ -38,8 +46,11 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.loginForm.valid) {
       const email = this.loginForm.get('email')?.value;
-
       this.authService.login(email);
     }
+  }
+
+  get email() {
+    return this.loginForm.get('email');
   }
 }
