@@ -15,10 +15,22 @@
        routerLinkActive="active-link">Departamentos</a>
   </nav>
 
-  <div class="navbar-user-info" style="margin-left: auto; display: flex; align-items: center; color: white;">
-    </div>
+  <div class="navbar-user-info">
 
-</header>
+    <span class="navbar-text" *ngIf="userEmail">
+      {{ userEmail }}
+    </span>
+
+    <p-button
+      type="button"
+      icon="pi pi-sign-out"
+      label="Sair"
+      (click)="logout()"
+      styleClass="p-button-text p-button-sm p-button-danger">
+    </p-button>
+
+  </div>
+  </header>
 
 <main class="container">
   <router-outlet></router-outlet>
