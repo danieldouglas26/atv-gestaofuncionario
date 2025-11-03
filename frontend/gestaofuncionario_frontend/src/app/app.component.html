@@ -1,7 +1,7 @@
 <p-toast></p-toast>
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 
-<header class="navbar">
+<header class="navbar" *ngIf="isAuthenticated$ | async">
   <div class="navbar-brand">
     <img src="/imagens/SENAI_logo_2024.png" alt="Logo da Empresa" class="navbar-logo">
     <h1>Gestão de Pessoal</h1>
@@ -14,6 +14,10 @@
     <a routerLink="/departamentos"
        routerLinkActive="active-link">Departamentos</a>
   </nav>
+
+  <div class="navbar-user-info" style="margin-left: auto; display: flex; align-items: center; color: white;">
+    </div>
+
 </header>
 
 <main class="container">
