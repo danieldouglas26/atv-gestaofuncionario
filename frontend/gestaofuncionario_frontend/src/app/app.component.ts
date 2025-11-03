@@ -1,21 +1,25 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+import { HeaderComponent } from './header/header.component';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    ToastModule,
-    ConfirmDialogModule
-  ],
+
+  imports: [RouterOutlet, CommonModule, HeaderComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'gestaofuncionario-frontend';
+  title = 'gestao-funcionarios-frontend';
+
+  isAuthenticated$: Observable<boolean>;
+
+  constructor(private authService: AuthService) {
+
+    this.isAuthenticated$ = this.authService.authState$;
+  }
 }
