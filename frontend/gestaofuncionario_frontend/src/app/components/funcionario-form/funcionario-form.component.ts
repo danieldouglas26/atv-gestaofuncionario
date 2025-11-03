@@ -1,7 +1,7 @@
 import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router'; // Removido RouterLink
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
@@ -12,8 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { Funcionario } from '../../models/funcionario.model';
 import { FuncionarioService } from '../../services/funcionario.service';
-
-// --- NOVOS IMPORTS ---
+import { CanComponentDeactivate } from '../../guards/unsaved-changes.guard';
 import { DropdownModule } from 'primeng/dropdown';
 import { Departamento } from '../../models/departamento.model';
 import { DepartamentoService } from '../../services/departamento.service';
@@ -24,19 +23,21 @@ import { DepartamentoService } from '../../services/departamento.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    // RouterLink, // Removido
+
     PanelModule,
     InputTextModule,
     InputNumberModule,
     CalendarModule,
     ButtonModule,
     ToastModule,
-    DropdownModule // Adicionado
+    DropdownModule
   ],
   templateUrl: './funcionario-form.component.html',
   styleUrl: './funcionario-form.component.scss'
 })
-export class FuncionarioFormComponent implements OnInit {
+
+
+export class FuncionarioFormComponent implements OnInit, CanComponentDeactivate {
 
   form: FormGroup;
   isEditMode = false;
@@ -123,6 +124,8 @@ export class FuncionarioFormComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
+
+        this.form.reset(this.form.value);
         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: `Funcionário ${this.isEditMode ? 'atualizado' : 'criado'}!` });
         this.router.navigate(['/funcionarios']);
       }
@@ -143,5 +146,15 @@ export class FuncionarioFormComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const control = this.form.get(fieldName);
     return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
+
+
+  hasUnsavedChanges(): boolean {
+
+    if (this.form.dirty) {
+      return true;
+    }
+
+    return false;
   }
 }

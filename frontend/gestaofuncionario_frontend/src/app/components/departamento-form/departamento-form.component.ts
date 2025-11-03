@@ -9,6 +9,7 @@ import { PanelModule } from 'primeng/panel';
 import { ToastModule } from 'primeng/toast';
 import { DepartamentoService } from '../../services/departamento.service';
 import { catchError, throwError } from 'rxjs';
+import { CanComponentDeactivate } from '../../guards/unsaved-changes.guard';
 
 @Component({
   selector: 'app-departamento-form',
@@ -25,7 +26,9 @@ import { catchError, throwError } from 'rxjs';
   templateUrl: './departamento-form.component.html',
   styleUrl: './departamento-form.component.scss'
 })
-export class DepartamentoFormComponent implements OnInit {
+
+
+export class DepartamentoFormComponent implements OnInit, CanComponentDeactivate {
 
   form: FormGroup;
   isEditMode = false;
@@ -82,6 +85,8 @@ export class DepartamentoFormComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
+
+        this.form.reset(this.form.value);
         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: `Departamento ${this.isEditMode ? 'atualizado' : 'criado'}!` });
         this.router.navigate(['/departamentos']);
       }
@@ -96,5 +101,15 @@ export class DepartamentoFormComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const control = this.form.get(fieldName);
     return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
+
+
+  hasUnsavedChanges(): boolean {
+
+    if (this.form.dirty) {
+      return true;
+    }
+
+    return false;
   }
 }
